@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spice Store - Account</title>
+</head>
+<body>
+    {% block content %}
+  <h2>Account</h2>
+
+  <!-- Display user data fields -->
+  <form id="account-form" method="POST" action="{{ url_for('account') }}">
+    <label for="username">Username:</label>
+    <input type="text" name="username" value="{{ user_data[1] }}" >
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" value="{{ user_data[4] }}">
+
+    <label for="phone_number">Phone Number:</label>
+    <input type="text" name="phone_number" value="{{ user_data[5] }}">
+
+    <label for="password">Password:</label>
+    <input type="password" name="password">
+
+    <button type="submit">Update</button>
+
+    <!-- Add the delete account button and prompt -->
+    <button type="button" id="delete-account">Delete Account</button>
+  </form>
+
+  <!-- Delete account confirmation prompt -->
+  <div id="delete-prompt" style="display: none;">
+    <p>Are you sure you want to delete your account?</p>
+    <button type="button" id="delete-confirm">Delete</button>
+    <button type="button" id="delete-cancel">Back</button>
+  </div>
+
+  <script>
+    // Get the delete account button and prompt elements
+    const deleteAccountButton = document.getElementById('delete-account');
+    const deletePrompt = document.getElementById('delete-prompt');
+    const accountForm = document.getElementById('account-form');
+
+    // Show the delete account prompt when the button is clicked
+    deleteAccountButton.addEventListener('click', () => {
+      deletePrompt.style.display = 'block';
+    });
+
+    // Hide the delete account prompt when the cancel button is clicked
+    const deleteCancelButton = document.getElementById('delete-cancel');
+    deleteCancelButton.addEventListener('click', () => {
+      deletePrompt.style.display = 'none';
+    });
+
+    // Submit the form to delete the account when the confirm button is clicked
+    const deleteConfirmButton = document.getElementById('delete-confirm');
+    deleteConfirmButton.addEventListener('click', () => {
+      // Submit the form to delete the account
+      accountForm.submit();
+    });
+  </script>
+{% endblock %}
+</body>
+</html>

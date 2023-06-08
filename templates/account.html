@@ -8,7 +8,7 @@
   <h2>Account</h2>
 
   <!-- Display user data fields -->
-  <form id="account-form" method="POST" action="{{ url_for('account') }}">
+  <form id="account-form" method="POST" action="/account">
     <label for="username">Username:</label>
     <input type="text" name="username" value="{{ user_data[1] }}" >
 
@@ -22,42 +22,42 @@
     <input type="password" name="password">
 
     <button type="submit">Update</button>
+  </form>
 
     <!-- Add the delete account button and prompt -->
     <button type="button" id="delete-account">Delete Account</button>
-  </form>
-
-  <!-- Delete account confirmation prompt -->
-  <div id="delete-prompt" style="display: none;">
-    <p>Are you sure you want to delete your account?</p>
-    <button type="button" id="delete-confirm">Delete</button>
+    <div id="delete-prompt" style="display: none;">
+  <p>Are you sure you want to delete your account?</p>
+  <form id="delete-form" method="POST" action="/delete_account">
+    <button type="submit" id="delete-confirm">Delete</button>
     <button type="button" id="delete-cancel">Back</button>
-  </div>
+  </form>
+</div>
 
-  <script>
-    // Get the delete account button and prompt elements
-    const deleteAccountButton = document.getElementById('delete-account');
-    const deletePrompt = document.getElementById('delete-prompt');
-    const accountForm = document.getElementById('account-form');
+<script>
+  // Get the delete account button and prompt elements
+  const deleteAccountButton = document.getElementById('delete-account');
+  const deletePrompt = document.getElementById('delete-prompt');
+  const deleteForm = document.getElementById('delete-form');
 
-    // Show the delete account prompt when the button is clicked
-    deleteAccountButton.addEventListener('click', () => {
-      deletePrompt.style.display = 'block';
-    });
+  // Show the delete account prompt when the button is clicked
+  deleteAccountButton.addEventListener('click', () => {
+    deletePrompt.style.display = 'block';
+  });
 
-    // Hide the delete account prompt when the cancel button is clicked
-    const deleteCancelButton = document.getElementById('delete-cancel');
-    deleteCancelButton.addEventListener('click', () => {
-      deletePrompt.style.display = 'none';
-    });
+  // Hide the delete account prompt when the cancel button is clicked
+  const deleteCancelButton = document.getElementById('delete-cancel');
+  deleteCancelButton.addEventListener('click', () => {
+    deletePrompt.style.display = 'none';
+  });
 
-    // Submit the form to delete the account when the confirm button is clicked
-    const deleteConfirmButton = document.getElementById('delete-confirm');
-    deleteConfirmButton.addEventListener('click', () => {
-      // Submit the form to delete the account
-      accountForm.submit();
-    });
-  </script>
+  // Submit the form to delete the account when the confirm button is clicked
+  const deleteConfirmButton = document.getElementById('delete-confirm');
+  deleteConfirmButton.addEventListener('click', () => {
+    // Submit the form to delete the account
+    deleteForm.submit();
+  });
+</script>
 {% endblock %}
 </body>
 </html>

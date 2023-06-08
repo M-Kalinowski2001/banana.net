@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Cart</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/cart">Cart</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">Options</a>
+                <div class="dropdown-content">
+                    <a href="#">Option 1</a>
+                    <a href="#">Option 2</a>
+                    <a href="#">Option 3</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <h1>Your Cart</h1>
+
+    {% if cart_items %}
+    <ul>
+        {% for item in cart_items %}
+        <li>
+            <h2>{{ item['name'] }}</h2>
+            <p>Price: ${{ item['price'] }}</p>
+            <p>Quantity: {{ item['quantity'] }}</p>
+            <form action="/cart" method="POST">
+                <input type="hidden" name="product_id" value="{{ item['product_id'] }}">
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <p>Total Price: ${{ '{:.2f}'.format(total_price) }}</p>
+
+    {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %}
+</body>
+</html>
+With these changes, the cart page should display the list of items in the cart (if any), along with their prices and quantities. It will also show the total price. If the cart is empty, it will display a message indicating that the cart is empty.
+
+Please give it a try and let me know if you have any further issues.
+
+
+
+
+
+

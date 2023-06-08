@@ -8,12 +8,13 @@
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/login">Login</a></li>
+             <li><a href="/cart">Cart</a></li>
             <li class="dropdown">
                 <a href="#" class="dropbtn">Options</a>
                 <div class="dropdown-content">
                     <a href="#">Option 1</a>
-                    <a href="#">Test 2</a>
-                    <a href="#">Test 3</a>
+                    <a href="#">Option 2</a>
+                    <a href="#">Option 3</a>
                 </div>
             </li>
         </ul>
@@ -27,14 +28,20 @@
     </form>
 
     <ul>
-        {% for product in products %}
-        <li>
-            <h2>{{ product[0] }}</h2>
-            <p>Price: ${{ product[1] }}</p>
-            <p>Quantity: {{ product[2] }}</p>
-            <p>Country of Origin: {{ product[3] }}</p>
-        </li>
-        {% endfor %}
-    </ul>
+    {% for product in products %}
+    <li>
+        <h2>{{ product[1] }}</h2>
+        <p>Price: ${{ product[2] }}</p>
+        <p>Quantity: {{ product[3] }}</p>
+        <p>Country of Origin: {{ product[4] }}</p>
+            <form action="/add_to_cart" method="POST">
+    <input type="hidden" name="product_id" value="{{ product[0] }}">
+     <input type="number" name="quantity" min="1" max="{{ product[3] }}" value="1">
+    <button type="submit">Add to Cart</button>
+</form>
+
+    </li>
+    {% endfor %}
+</ul>
 </body>
 </html>

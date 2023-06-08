@@ -2,7 +2,7 @@ import secrets
 
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 import mysql.connector
-from MainSiteCode.loginForm import hash_password
+from loginForm import hash_password
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)  # Replace with your secret key
@@ -136,7 +136,7 @@ def account():
                 user_id = cursor.fetchone()[0]
 
                 # Delete the user data from the user_data table based on the retrieved ID
-                cursor.execute('DELETE FROM user_data WHERE id = %s', (user_id,))
+                cursor.execute('DELETE FROM user_data WHERE username = %s', (username,))
                 conn.commit()
 
                 # Close the database connection

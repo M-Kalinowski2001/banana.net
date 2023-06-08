@@ -1,7 +1,7 @@
 import mysql.connector
 import hashlib
 
-# Database configuration
+
 db_config = {
     'host': 'localhost',
     'user': 'root',
@@ -9,11 +9,11 @@ db_config = {
     'database': 'spice_store'
 }
 
-# Connect to the database
+
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
 
-# Create the user_data table
+
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS user_data (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,7 +26,7 @@ cursor.execute('''
     )
 ''')
 
-# Commit the changes and close the database connection
+
 conn.commit()
 cursor.close()
 conn.close()

@@ -1,7 +1,6 @@
 import mysql.connector
 import hashlib
 
-# Database configuration
 db_config = {
     'host': 'localhost',
     'user': 'root',
@@ -9,7 +8,6 @@ db_config = {
     'database': 'spice_store'
 }
 
-# Sample user data
 users = [
     {
         'username': 'user1',
@@ -35,19 +33,15 @@ users = [
         'phone_number': '5555555555',
         'password': 'password3'
     }
-    # Add more users here
+
 ]
 
-# Connect to the database
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
 
-# Insert user data into the table
 for user in users:
-    # Hash the password using SHA-256
     hashed_password = hashlib.sha256(user['password'].encode()).hexdigest()
 
-    # Prepare the SQL query
     sql = '''
         INSERT INTO user_data (username, first_name, last_name, email, phone_number, password)
         VALUES (%s, %s, %s, %s, %s, %s)
@@ -61,10 +55,8 @@ for user in users:
         hashed_password
     )
 
-    # Execute the SQL query
     cursor.execute(sql, values)
 
-# Commit the changes and close the database connection
 conn.commit()
 cursor.close()
 conn.close()

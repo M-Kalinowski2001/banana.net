@@ -7,9 +7,9 @@ from fillDb import products
 from loginForm import hash_password
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)  # Replace with your secret key
+app.secret_key = secrets.token_hex(16)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-# Database configuration
 db_config = {
     'host': 'localhost',
     'user': 'root',
@@ -19,15 +19,12 @@ db_config = {
 
 
 def get_products():
-    # Connect to the database
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
 
-    # Fetch product information from the database
     cursor.execute('SELECT id, name, price, quantity, country_of_origin FROM products')
     products = cursor.fetchall()
 
-    # Close the database connection
     cursor.close()
     conn.close()
 
@@ -35,15 +32,12 @@ def get_products():
 
 
 def get_product_by_id(product_id):
-    # Connect to the database
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
 
-    # Fetch product information from the database based on the product ID
     cursor.execute('SELECT id, name, price, quantity, country_of_origin FROM products WHERE id=%s', (product_id,))
     product = cursor.fetchone()
 
-    # Close the database connection
     cursor.close()
     conn.close()
 
@@ -62,7 +56,6 @@ def get_cart_items():
 
 @app.route('/')
 def home():
-    # Get the product information from the database
     products = get_products()
 
     return render_template('index.html', products=products)
@@ -75,23 +68,20 @@ def login():
         password = request.form['password']
         hashed_password = hash_password(password)
 
-        # Connect to the database
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
-        # Check if the username and hashed password exist in the user_data table
         cursor.execute('''
             SELECT COUNT(*) FROM user_data
             WHERE username = %s AND password = %s
         ''', (username, hashed_password))
         result = cursor.fetchone()
 
-        # Close the database connection
         cursor.close()
         conn.close()
 
         if result[0] > 0:
-            # Set the username in the session
+
             session['username'] = username
 
             return redirect(url_for('login_success'))
@@ -103,7 +93,8 @@ def login():
 
 @app.route('/login_success')
 def login_success():
-    return render_template('main_site.html')
+    products = get_products()
+    return render_template('main_site.html', products=products)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -117,18 +108,15 @@ def register():
         password = request.form['password']
         hashed_password = hash_password(password)
 
-        # Connect to the database
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
-        # Insert user data into the user_data table
         cursor.execute('''
                 INSERT INTO user_data (username, first_name, last_name, email, phone_number, password)
                 VALUES (%s, %s, %s, %s, %s, %s)
             ''', (username, first_name, last_name, email, phone_number, hashed_password))
         conn.commit()
 
-        # Close the database connection
         cursor.close()
         conn.close()
 
@@ -138,17 +126,14 @@ def register():
 
 
 def get_user_data(username):
-    # Connect to the database
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
 
-    # Fetch the user data from the user_data table based on the username
     cursor.execute(
         'SELECT id, username, first_name, last_name, email, phone_number, password FROM user_data WHERE username = %s',
         (username,))
     user_data = cursor.fetchone()
 
-    # Close the database connection
     cursor.close()
     conn.close()
 
@@ -162,23 +147,18 @@ def account():
 
         if request.method == 'POST':
             if 'delete_account' in request.form:
-                # Connect to the database
                 conn = mysql.connector.connect(**db_config)
                 cursor = conn.cursor()
 
-                # Delete the user data from the user_data table based on the username
                 cursor.execute('DELETE FROM user_data WHERE username = %s', (username,))
                 conn.commit()
 
-                # Close the database connection
                 cursor.close()
                 conn.close()
 
-                # Clear the session data and display a success message
                 session.pop('username', None)
                 flash('Your account has been successfully deleted.', 'success')
 
-                # Redirect to the home page (index.html)
                 return redirect(url_for('home'))
 
             new_username = request.form['username']
@@ -186,11 +166,9 @@ def account():
             new_phone_number = request.form['phone_number']
             new_password = request.form['password']
 
-            # Connect to the database
             conn = mysql.connector.connect(**db_config)
             cursor = conn.cursor()
 
-            # Update user data in the user_data table
             if new_password:
                 hashed_password = hash_password(new_password)
                 cursor.execute('''
@@ -207,17 +185,13 @@ def account():
 
             conn.commit()
 
-            # Close the database connection
             cursor.close()
             conn.close()
 
-            # Display a success message
             flash('Your account information has been successfully updated.', 'success')
 
-            # Redirect to the account page
             return redirect(url_for('account'))
 
-        # Fetch the user data
         user_data = get_user_data(username)
         return render_template('account.html', user_data=user_data)
 
@@ -230,38 +204,32 @@ def delete_account():
     if 'username' in session:
         username = session['username']
 
-        # Connect to the database
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
-        # Delete the user data from the user_data table based on the username
         cursor.execute('DELETE FROM user_data WHERE username = %s', (username,))
         conn.commit()
 
-        # Close the database connection
         cursor.close()
         conn.close()
 
-        # Clear the session data and display a success message
         session.pop('username', None)
         flash('Your account has been successfully deleted.', 'success')
 
-        # Redirect to the home page (index.html)
         return redirect(url_for('home'))
 
     return redirect(url_for('login'))
+
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     product_id = request.form['product_id']
     quantity = int(request.form['quantity'])
 
-    # Get the product information
     product_info = get_product_by_id(product_id)
     name = product_info[0]
     price = float(product_info[1])
 
-    # Create a new cart item dictionary
     item = {
         'product_id': product_id,
         'name': name,
@@ -269,51 +237,45 @@ def add_to_cart():
         'quantity': quantity,
     }
 
-    # Retrieve the cart items from the session
     cart_items = session.get('cart', [])
 
-    # Add the new item to the cart
     cart_items.append(item)
 
-    # Store the updated cart items in the session
     session['cart'] = cart_items
 
-    # Redirect back to the homepage
     return redirect('/')
 
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
-    # Retrieve the cart items from the session
     cart_items = session.get('cart', [])
 
     if request.method == 'POST':
-        # Retrieve the product ID from the form
+
         product_id = request.form['product_id']
 
-        # Retrieve the cart items from the session
         cart_items = session.get('cart', [])
 
-        # Remove the product from the cart
         for item in cart_items:
             if item['product_id'] == product_id:
                 cart_items.remove(item)
                 break
-
-        # Update the cart items in the session
         session['cart'] = cart_items
 
-        # Retrieve the cart items from the session
     cart_items = session.get('cart', [])
 
-    # Calculate the total price of the items in the cart
     total_price = 0
     for item in cart_items:
         product_info = get_product_by_id(item['product_id'])
         if product_info[1] is not None:
             total_price += product_info[1] * item['quantity']
 
-    return render_template('cart.html', cart_items=cart_items, total_price=total_price)
+    is_logged_in = 'username' in session
+
+    if is_logged_in:
+        return render_template('userCart.html', cart_items=cart_items, total_price=total_price)
+    else:
+        return render_template('cart.html', cart_items=cart_items, total_price=total_price, is_logged_in=is_logged_in)
 
 
 def remove_product_from_cart(product_id):
@@ -324,11 +286,12 @@ def remove_product_from_cart(product_id):
 
 @app.route('/checkout')
 def checkout():
-    if 'username' in session:
-        cart_items = get_cart_items()
-        cart_total = sum(item['total_price'] for item in cart_items)
+    is_logged_in = 'username' in session
 
-        return render_template('checkout.html', cart_items)
+    if is_logged_in:
+        return render_template('checkoutUser.html')
+    else:
+        return render_template('checkout.html')
 
 
 @app.route('/change_address')

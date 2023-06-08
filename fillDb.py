@@ -1,6 +1,6 @@
 import mysql.connector
 
-# Database configuration
+
 db_config = {
     'host': 'localhost',
     'user': 'root',
@@ -8,7 +8,7 @@ db_config = {
     'database': 'spice_store'
 }
 
-# Sample product information
+
 products = [
     {
         'name': 'Cinnamon',
@@ -46,14 +46,14 @@ products = [
         'quantity': 21,
         'country_of_origin': 'Colombia'
     }
-    # Add more products here
+
 ]
 
-# Connect to the database
+
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
 
-# Insert product information into the table
+
 for product in products:
     sql = '''
         INSERT INTO products (name, price, quantity, country_of_origin)
@@ -62,7 +62,7 @@ for product in products:
     values = (product['name'], product['price'], product['quantity'], product['country_of_origin'])
     cursor.execute(sql, values)
 
-# Commit the changes and close the database connection
+
 conn.commit()
 cursor.close()
 conn.close()

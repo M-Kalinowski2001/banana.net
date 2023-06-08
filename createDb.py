@@ -1,18 +1,18 @@
 import mysql.connector
 
-# Connect to the MySQL server
+
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
     password=''
 )
 
-# Create a new database
+
 cursor = conn.cursor()
 cursor.execute('CREATE DATABASE IF NOT EXISTS spice_store')
 cursor.execute('USE spice_store')
 
-# Create a table for products
+
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS products (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,11 +23,11 @@ cursor.execute('''
     )
 ''')
 
-# Close the connection to the MySQL server
+
 cursor.close()
 conn.close()
 
-# Create a file for connecting to the database using Flask
+
 with open('db.py', 'w') as file:
     file.write('''\
 import mysql.connector

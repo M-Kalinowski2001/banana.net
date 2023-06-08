@@ -54,11 +54,36 @@ def get_cart_items():
         return []
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
-    products = get_products()
+    search_query = request.args.get('search', '').capitalize()
 
-    return render_template('index.html', products=products)
+    if search_query:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT * FROM products WHERE name LIKE %s
+        ''', (f'%{search_query}%',))
+
+        products = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+    else:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT * FROM products
+        ''')
+
+        products = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+    return render_template('index.html', products=products, search_query=search_query)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -91,10 +116,39 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/login_success')
+@app.route('/login_success', methods=['GET'])
 def login_success():
-    products = get_products()
-    return render_template('main_site.html', products=products)
+    search_query = request.args.get('search', '').capitalize()
+
+    if 'username' in session:
+        if search_query:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                SELECT * FROM products WHERE name LIKE %s
+            ''', (f'%{search_query}%',))
+
+            products = cursor.fetchall()
+
+            cursor.close()
+            conn.close()
+        else:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                SELECT * FROM products
+            ''')
+
+            products = cursor.fetchall()
+
+            cursor.close()
+            conn.close()
+
+        return render_template('main_site.html', products=products, search_query=search_query)
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -111,6 +165,16 @@ def register():
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
+        # Check if the username already exists in the database
+        cursor.execute('SELECT username FROM user_data WHERE username = %s', (username,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            cursor.close()
+            conn.close()
+            return render_template('register.html', error_message='Username already exists. Please choose a different '
+                                                                  'username.')
+
         cursor.execute('''
                 INSERT INTO user_data (username, first_name, last_name, email, phone_number, password)
                 VALUES (%s, %s, %s, %s, %s, %s)
@@ -123,8 +187,6 @@ def register():
         return redirect(url_for('login', success_message='Registration successful. You can now login.'))
 
     return render_template('register.html')
-
-
 def get_user_data(username):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()

@@ -111,6 +111,16 @@ def register():
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
 
+        # Check if the username already exists in the database
+        cursor.execute('SELECT username FROM user_data WHERE username = %s', (username,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            cursor.close()
+            conn.close()
+            return render_template('register.html', error_message='Username already exists. Please choose a different '
+                                                                  'username.')
+
         cursor.execute('''
                 INSERT INTO user_data (username, first_name, last_name, email, phone_number, password)
                 VALUES (%s, %s, %s, %s, %s, %s)

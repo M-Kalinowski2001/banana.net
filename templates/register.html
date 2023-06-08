@@ -6,6 +6,10 @@
 <body>
     <h1>Register</h1>
 
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% endif %}
+
     <form method="POST" action="/register">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
@@ -20,7 +24,7 @@
         <input type="email" id="email" name="email" required><br>
 
         <label for="phone_number">Phone Number:</label>
-        <input type="text" id="phone_number" name="phone_number" required><br>
+        <input type="text" id="phone_number" name="phone_number" maxlength="9" required><br>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>

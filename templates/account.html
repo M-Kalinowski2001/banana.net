@@ -72,6 +72,12 @@
           text-align: center;
           text-decoration: none;
         }
+        #delete-confirm{
+          background-color: #f44336;
+        }
+        #delete-cancel{
+          background-color: yellowgreen;
+        }
 
     </style>
 </head>
@@ -108,6 +114,7 @@
   <p>Are you sure you want to delete your account?</p>
   <form id="delete-form" method="POST" action="/delete_account">
     <button type="submit" id="delete-confirm">Delete</button>
+    <br>
     <button type="button" id="delete-cancel">Back</button>
   </form>
 </div>

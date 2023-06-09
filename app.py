@@ -305,8 +305,10 @@ def add_to_cart():
 
     session['cart'] = cart_items
 
-    return redirect('/')
-
+    if 'username' in session:
+        return redirect('/login_success')
+    else:
+        return redirect('/')
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():

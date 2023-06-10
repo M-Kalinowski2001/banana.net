@@ -187,6 +187,8 @@ def register():
         return redirect(url_for('login', success_message='Registration successful. You can now login.'))
 
     return render_template('register.html')
+
+
 def get_user_data(username):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
@@ -310,10 +312,9 @@ def add_to_cart():
     else:
         return redirect('/')
 
+
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
-    cart_items = session.get('cart', [])
-
     if request.method == 'POST':
 
         product_id = request.form['product_id']
